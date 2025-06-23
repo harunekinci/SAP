@@ -71,6 +71,7 @@ CORRESPONDING # ->
  ls_balance-documents[] = corresponding #( lt_data[] mapping referance   = xblnr ).
 
 ------------------------------------------------------------
+
 BASE # ->
 
  lt_data[] = value #( base lt_data 
