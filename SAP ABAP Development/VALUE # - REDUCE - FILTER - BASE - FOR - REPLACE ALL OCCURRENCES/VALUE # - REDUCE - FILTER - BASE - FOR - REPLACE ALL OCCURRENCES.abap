@@ -74,8 +74,8 @@ CORRESPONDING # ->
 BASE # ->
 
  lt_data[] = value #( base lt_data 
-		       kunnr = lv_kunnr
-                       mtart = 'HAWA' ).
+		      kunnr = lv_kunnr
+                      mtart = 'HAWA' ).
 
 ------------------------------------------------------------
 
