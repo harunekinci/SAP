@@ -66,6 +66,18 @@ APPEND VALUE # ->
 
 ------------------------------------------------------------
 
+CORRESPONDING # ->
+
+ ls_balance-documents[] = corresponding #( lt_data[] mapping referance   = xblnr 
+
+------------------------------------------------------------
+BASE # ->
+
+ lt_data[] = value #( base lt_data 
+		       kunnr = lv_kunnr
+                       mtart = 'HAWA'   ).
+
+------------------------------------------------------------
 
 REPLACE ALL OCCURRENCES ->
 
