@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JS OOP Master Guide</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --sidebar-width: 280px;
+            --header-height: 60px;
+            --bg-body: #f1f5f9;
+            --bg-white: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --code-bg: #1e1e1e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        /* --- MOBIL HEADER (Sadece Mobilde Görünür) --- */
+        .mobile-header {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: var(--header-height);
+            background: var(--bg-white);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+            align-items: center;
+            padding: 0 1rem;
+            justify-content: space-between;
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-main);
+            padding: 0.5rem;
+        }
+
+        .brand { font-weight: bold; font-size: 1.1rem; color: var(--primary); }
+
+        /* --- SIDEBAR --- */
+        aside {
+            position: fixed;
+            top: 0; left: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: #0f172a; /* Koyu Sidebar */
+            color: #fff;
+            padding: 2rem 1rem;
+            overflow-y: auto;
+            z-index: 1100;
+            transition: transform 0.3s ease;
+        }
+
+        aside h3 {
+            color: #60a5fa;
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #334155;
+            text-align: center;
+        }
+
+        nav ul { list-style: none; }
+        
+        nav a {
+            display: block;
+            color: #94a3b8;
+            text-decoration: none;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.25rem;
+            border-radius: 8px;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+
+        nav a:hover, nav a.active {
+            background: var(--primary);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        /* --- MAIN CONTENT --- */
+        main {
+            margin-left: var(--sidebar-width); /* Sidebar kadar boşluk */
+            padding: 3rem;
+            max-width: 1200px;
+        }
+
+        section {
+            background: var(--bg-white);
+            border-radius: 12px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            scroll-margin-top: 80px; /* Header takılmasın diye */
+        }
+
+        h1 { font-size: 2.25rem; margin-bottom: 1rem; color: #0f172a; }
+        h2 { font-size: 1.5rem; margin: 1.5rem 0 1rem 0; color: var(--primary); display: flex; align-items: center; }
+        h2::before { content: '#'; margin-right: 8px; color: var(--text-muted); opacity: 0.5; }
+        
+        p { margin-bottom: 1rem; color: #334155; }
+
+        /* Badge Style */
+        .badge {
+            display: inline-block;
+            background: #eff6ff;
+            color: var(--primary);
+            padding: 4px 12px;
+            border-radius: 99px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 1rem;
+        }
+
+        /* --- CODE BLOCKS (Responsive) --- */
+        pre {
+            background: var(--code-bg);
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto; /* Yatay scroll */
+            margin: 1.5rem 0;
+            position: relative;
+        }
+
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            color: #e2e8f0;
+            font-size: 0.9rem;
+        }
+        
+        /* Syntax highlighting basic colors */
+        .kwd { color: #c678dd; } /* keyword */
+        .str { color: #98c379; } /* string */
+        .num { color: #d19a66; } /* number */
+        .func { color: #61afef; } /* function */
+        .cls { color: #e5c07b; } /* class */
+        .cmt { color: #7f848e; font-style: italic; } /* comment */
+
+        /* --- OVERLAY (Mobilde kararır) --- */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1050;
+            backdrop-filter: blur(2px);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        /* --- MEDIA QUERIES (Responsive Logic) --- */
+        @media (max-width: 992px) {
+            /* TABLET & MOBILE MODU */
+            .mobile-header { display: flex; }
+            
+            aside {
+                transform: translateX(-100%); /* Varsayılan olarak gizle */
+                box-shadow: 5px 0 15px rgba(0,0,0,0.2);
+            }
+
+            aside.open { transform: translateX(0); } /* Açılınca gelsin */
+
+            .overlay.open { display: block; opacity: 1; }
+
+            main {
+                margin-left: 0;
+                padding: 1.5rem;
+                padding-top: calc(var(--header-height) + 1.5rem);
+            }
+
+            section { padding: 1.5rem; }
+            h1 { font-size: 1.75rem; }
+            
+            pre { 
+                font-size: 0.85rem; 
+                padding: 1rem; 
+                margin: 1rem -1rem; /* Mobilde biraz kenarlara yay */
+                border-radius: 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="mobile-header">
+        <button class="menu-toggle" onclick="toggleSidebar()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+        </button>
+        <div class="brand">JS OOP Guide</div>
+        <div style="width: 24px;"></div> </header>
+
+    <div class="overlay" onclick="toggleSidebar()"></div>
+
+    <aside id="sidebar">
+        <h3>OOP Guide</h3>
+        <nav>
+            <a href="#giris" class="active">Giriş</a>
+            <a href="#class">1. Class & Constructor</a>
+            <a href="#encapsulation">2. Encapsulation (#)</a>
+            <a href="#inheritance">3. Inheritance</a>
+            <a href="#polymorphism">4. Polymorphism</a>
+            <a href="#abstraction">5. Abstraction</a>
+            <a href="#interface">6. Interface</a>
+            <a href="#composition">7. Composition</a>
+        </nav>
+    </aside>
+
+    <main>
+        <section id="giris">
+            <h1>JavaScript OOP Master Guide</h1>
+            <p>4.5 yıllık tecrübeye uygun, modern ES6+ standartlarında syntax ve mimari rehberi.</p>
+        </section>
+
+        <section id="class">
+            <span class="badge">TEMEL</span>
+            <h2>Class & Constructor</h2>
+            <p>JS'de sınıflar birer "Syntactic Sugar"dır. Arka planda Prototype çalışır ama yazımı Java/C#'a benzer.</p>
+            <pre><code><span class="kwd">class</span> <span class="cls">Developer</span> {
+    <span class="func">constructor</span>(ad, stack) {
+        <span class="kwd">this</span>.ad = ad;
+        <span class="kwd">this</span>.stack = stack;
+    }
+
+    <span class="func">kodYaz</span>() {
+        <span class="kwd">return</span> <span class="str">`${this.ad} kodluyor...`</span>;
+    }
+}</code></pre>
+        </section>
+
+        <section id="encapsulation">
+            <span class="badge">ES2022</span>
+            <h2>Encapsulation (Private Fields)</h2>
+            <p>Modern JS'de değişkenlerin başına <code>#</code> koyarak onları dış dünyaya kapatırız.</p>
+            <pre><code><span class="kwd">class</span> <span class="cls">BankaHesabi</span> {
+    #bakiye; <span class="cmt">// Private Değişken</span>
+
+    <span class="func">constructor</span>(miktar) {
+        <span class="kwd">this</span>.#bakiye = miktar;
+    }
+
+    <span class="func">getBakiye</span>() {
+        <span class="kwd">return</span> <span class="kwd">this</span>.#bakiye;
+    }
+}
+<span class="cmt">// user.#bakiye -> HATA</span></code></pre>
+        </section>
+
+        <section id="inheritance">
+            <span class="badge">KALITIM</span>
+            <h2>Inheritance & Super</h2>
+            <p><code>extends</code> ve <code>super</code> anahtar kelimeleri ile miras alma işlemi.</p>
+            <pre><code><span class="kwd">class</span> <span class="cls">Personel</span> {
+    <span class="func">constructor</span>(ad) { <span class="kwd">this</span>.ad = ad; }
+}
+
+<span class="kwd">class</span> <span class="cls">Muhendis</span> <span class="kwd">extends</span> <span class="cls">Personel</span> {
+    <span class="func">constructor</span>(ad, dil) {
+        <span class="kwd">super</span>(ad); <span class="cmt">// Base class çağrısı zorunlu</span>
+        <span class="kwd">this</span>.dil = dil;
+    }
+}</code></pre>
+        </section>
+
+        <section id="polymorphism">
+            <span class="badge">ÇOK BİÇİMLİLİK</span>
+            <h2>Polymorphism</h2>
+            <p>Farklı sınıfların aynı metod ismine (imzasına) sahip olup farklı işler yapabilmesi.</p>
+            <pre><code><span class="kwd">class</span> <span class="cls">Kare</span> {
+    <span class="func">ciz</span>() { console.log(<span class="str">"Kare çizildi"</span>); }
+}
+
+<span class="kwd">class</span> <span class="cls">Daire</span> {
+    <span class="func">ciz</span>() { console.log(<span class="str">"Daire çizildi"</span>); }
+}
+
+<span class="kwd">const</span> sekiller = [<span class="kwd">new</span> <span class="cls">Kare</span>(), <span class="kwd">new</span> <span class="cls">Daire</span>()];
+sekiller.forEach(s => s.<span class="func">ciz</span>());</code></pre>
+        </section>
+
+        <section id="abstraction">
+            <span class="badge">SOYUTLAMA</span>
+            <h2>Abstraction</h2>
+            <p>Abstract class JS'de yoktur ama <code>new.target</code> ile simüle edilebilir.</p>
+            <pre><code><span class="kwd">class</span> <span class="cls">BaseAPI</span> {
+    <span class="func">constructor</span>() {
+        <span class="kwd">if</span> (<span class="kwd">new</span>.target === <span class="cls">BaseAPI</span>) {
+            <span class="kwd">throw</span> <span class="kwd">new</span> Error(<span class="str">"Abstract class new'lenemez!"</span>);
+        }
+    }
+}</code></pre>
+        </section>
+        
+        <section id="interface">
+            <span class="badge">PATTERN</span>
+            <h2>Interface (Simülasyon)</h2>
+            <p>Metodun içi boş bırakılıp hata fırlatılarak implementasyona zorlanır.</p>
+            <pre><code><span class="kwd">class</span> <span class="cls">ILogger</span> {
+    <span class="func">log</span>(msg) {
+        <span class="kwd">throw</span> <span class="kwd">new</span> Error(<span class="str">"log() metodu yazılmalıdır!"</span>);
+    }
+}</code></pre>
+        </section>
+
+        <section id="composition">
+            <span class="badge">BEST PRACTICE</span>
+            <h2>Composition over Inheritance</h2>
+            <p>Sürekli miras almak kodu kırılgan yapar. Yetenekleri parçalayıp birleştirme (Factory) yöntemidir.</p>
+            <pre><code><span class="kwd">const</span> <span class="func">ucabilir</span> = (o) => ({
+    <span class="func">uc</span>: () => console.log(<span class="str">`${o.ad} uçuyor`</span>)
+});
+
+<span class="kwd">const</span> <span class="func">RobotFactory</span> = (ad) => {
+    <span class="kwd">const</span> robot = { ad };
+    <span class="kwd">return</span> Object.assign(robot, <span class="func">ucabilir</span>(robot));
+}</code></pre>
+        </section>
+
+        <footer style="text-align: center; color: var(--text-muted); padding-top: 2rem; font-size: 0.9rem;">
+            Gemini &bull; 2024
+        </footer>
+    </main>
+
+    <script>
+        // DOM Elemanları
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.querySelector('.overlay');
+        const links = document.querySelectorAll('nav a');
+
+        // Menü Aç/Kapa
+        function toggleSidebar() {
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('open');
+            
+            // Menü açıldığında body scroll'u kilitle (isteğe bağlı)
+            if (sidebar.classList.contains('open')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        // Linklere tıklayınca menüyü kapat ve aktif class'ı ayarla
+        links.forEach(link => {
+            link.addEventListener('click', () => {
+                // Hepsinden active'i sil
+                links.forEach(l => l.classList.remove('active'));
+                // Tıklanana ekle
+                link.classList.add('active');
+                
+                // Mobildeysek menüyü kapat
+                if (window.innerWidth <= 992) {
+                    toggleSidebar();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
