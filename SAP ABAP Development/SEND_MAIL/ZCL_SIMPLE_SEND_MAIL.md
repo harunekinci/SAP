@@ -19,7 +19,7 @@
 Metodun SE24 interface yapısı ve parametre listesi:
 
 ### ABAP Metot Deklarasyonu
-```abap
+
 class-methods send_mail
   importing
     i_sender       type ad_smtpadr                optional
@@ -35,7 +35,7 @@ class-methods send_mail
   exporting
     e_message      type bapi_msg
     e_success      type flag.
-
+    
 <table>
   <thead>
     <tr style="background-color: #1F4E79; color: white;">
