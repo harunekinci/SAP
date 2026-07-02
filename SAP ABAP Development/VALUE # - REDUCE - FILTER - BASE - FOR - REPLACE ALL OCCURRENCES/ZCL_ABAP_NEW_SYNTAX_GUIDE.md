@@ -10,17 +10,15 @@
 
 <br/>
 
-> **Sistem Mimarı Özeti:** Bu doküman, SAP ABAP 7.40+ versiyonlarıyla birlikte gelen modern sözdizimi (New Syntax) yapılarını, temiz kod (*Clean ABAP*) prensiplerini ve performans optimizasyon standardslarını modeller. Klasik geliştirmedeki hantal geçici değişken tanımlamaları ve iç içe uzun döngüler, uygulama katmanında bellek optimizasyonuna ve okunabilirliği yüksek deklaratif yapılara dönüştürülür.
+> Bu doküman, SAP ABAP 7.40+ versiyonlarıyla birlikte kullanıma sunulan modern sözdizimi (New Syntax) yapılarını ve temiz kod standartlarını içermektedir. Yeni operatörler sayesinde geçici değişken tanımlamaları azaltılarak kodun okunabilirliği artırılmakta ve uygulama katmanında bellek optimizasyonu sağlanmaktadır.
 
 ---
 
-## 📊 Modernizasyonun Kantitatif Etkisi
+## 📊 Modern Sözdiziminin Avantajları
 
-Yeni sözdiziminin sağladığı optimizasyon ve performans kazanımlarının genel analizi:
-
-* **Ortalama Satır Tasarrufu (LOC):** %65 oranında daha az geçici değişken kullanımı ve satır içi atama esnekliği.
-* **Döngü Performans Artışı:** `REDUCE`, `FOR` ve `FILTER` optimizasyonları ile **2x - 3x** daha hızlı işleme kapasitesi.
-* **Bellek (Memory) Ayak İzi:** `LET` ve *Inline* deklarasyonlar ile değişkenlerin anlık olarak scoped (kapsam içi) üretilmesi ve işlem bitiminde otomatik serbest bırakılması.
+* **Daha Az Kod Satırı (LOC):** Satır içi (inline) deklarasyonlar ile gereksiz geçici değişken tanımlamaları ortadan kalkar.
+* **Performans Artışı:** `REDUCE`, `FOR` ve `FILTER` gibi yapılar internal tabloların daha hızlı işlenmesini sağlar.
+* **Bellek Yönetimi:** `LET` ve inline yapılar sayesinde değişkenler sadece ilgili işlem odağında (scoped) üretilir ve otomatik olarak serbest bırakılır.
 
 ---
 
