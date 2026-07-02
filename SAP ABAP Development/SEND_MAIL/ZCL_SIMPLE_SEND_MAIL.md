@@ -1,4 +1,4 @@
-# ✉️ ZCL_DAGNILAK_SEND_MAIL
+# ✉️ ZCL_SIMPLE_SEND_MAIL
 
 <br/>
 
@@ -10,11 +10,11 @@
 
 <br/>
 
-> **Sistem Mimarı Özeti:** `ZCL_DAGNILAK_SEND_MAIL`, SAP Business Communication Services (`cl_bcs`) mimarisini nesne tabanlı katmanlarla sarmalayan kurumsal bir e-posta framework bileşenidir. Geliştiricileri alt seviye SMTP ve adresleme detaylarından kurtararak `zcl_dagnilak_send_mail=>send_mail( )` statik çağrısı üzerinden dağıtım listesi (Mail Group) destekli, esnek ve tek merkezden yönetilebilir bir arayüz sağlar.
+> **Sistem Mimarı Özeti:** `ZCL_SIMPLE_SEND_MAIL`, SAP Business Communication Services (BCS) mimarisini nesne tabanlı katmanlarla sarmalayan kurumsal bir e-posta framework bileşenidir. Geliştiricileri SMTP konfigürasyon detaylarından kurtararak `zcl_simple_send_mail=>send_mail( )` statik metodu üzerinden temiz, deklaratif ve tek merkezden yönetilebilir bir arayüz sağlar.
 
 ---
 
-## 🛠️ SE24: Class Builder — zcl_dagnilak_send_mail=>send_mail( ) İmza Yapısı
+## 🛠️ SE24: Class Builder — zcl_simple_send_mail=>send_mail( ) İmza Yapısı
 
 Metodun SE24 interface yapısı ve parametre listesi:
 
@@ -66,6 +66,12 @@ Metodun SE24 interface yapısı ve parametre listesi:
     </tr>
     <tr>
       <td><img src="https://img.shields.io/badge/ℹ️-Importing-blue" alt="Imp"/></td>
+      <td><b>I_NO_COMMIT</b></td>
+      <td><code>TYPE FLAG OPTIONAL</code></td>
+      <td>Commit work yapılmasın</td>
+    </tr>
+    <tr>
+      <td><img src="https://img.shields.io/badge/ℹ️-Importing-blue" alt="Imp"/></td>
       <td><b>I_IMPORTANCE</b></td>
       <td><code>TYPE BCS_DOCIMP OPTIONAL</code></td>
       <td>Doküman önceliği</td>
@@ -73,7 +79,7 @@ Metodun SE24 interface yapısı ve parametre listesi:
     <tr style="background-color: #f1f5f9;">
       <td><img src="https://img.shields.io/badge/ℹ️-Importing-blue" alt="Imp"/></td>
       <td><b>T_RECEIVER</b></td>
-      <td><code>TYPE ZDAGNILAK_MAIL_REC_TAB OPTIONAL</code></td>
+      <td><code>TYPE ZBRS_MAIL_REC_TAB OPTIONAL</code></td>
       <td>Mail receiver</td>
     </tr>
     <tr style="background-color: #f1f5f9;">
@@ -85,20 +91,20 @@ Metodun SE24 interface yapısı ve parametre listesi:
     <tr style="background-color: #f1f5f9;">
       <td><img src="https://img.shields.io/badge/ℹ️-Importing-blue" alt="Imp"/></td>
       <td><b>T_ATTACH</b></td>
-      <td><code>TYPE ZDAGNILAK_MAIL_ATTACH_TAB OPTIONAL</code></td>
+      <td><code>TYPE ZBRS_ATTACH_TAB OPTIONAL</code></td>
       <td>Mail ile dosya gönderimi tablo tipi</td>
     </tr>
     <tr>
       <td><img src="https://img.shields.io/badge/⬆️-Exporting-orange" alt="Exp"/></td>
       <td><b>E_MESSAGE</b></td>
-      <td><code>TYPE BAPI_MSG</code></td>
-      <td>Uygulama/İstisna mesaj metni</td>
+      <td><code>TYPE TEXT100</code></td>
+      <td>Metin (100 krkt.)</td>
     </tr>
     <tr>
       <td><img src="https://img.shields.io/badge/⬆️-Exporting-orange" alt="Exp"/></td>
       <td><b>E_SUCCESS</b></td>
       <td><code>TYPE FLAG</code></td>
-      <td>Genel gösterge (X: Başarılı)</td>
+      <td>Genel gösterge</td>
     </tr>
   </tbody>
 </table>
@@ -107,10 +113,10 @@ Metodun SE24 interface yapısı ve parametre listesi:
 
 ## 🗂️ SE11: ABAP Dictionary — Bağımlı Yapılar
 
-### 1️⃣ Table Type: `ZDAGNILAK_MAIL_REC_TAB` *(Mail alıcıları tablo tipi)*
-* **Line Type (Structure):** `ZDAGNILAK_MAIL_RECEIVER`
+### 1️⃣ Table Type: `ZBRS_MAIL_REC_TAB` *(Mail alıcıları tablo tipi)*
+* **Line Type:** `ZBRS_MAIL_RECEIVER` *(Mail receiver)*
 
-#### Structure Components:
+#### Structure: `ZBRS_MAIL_RECEIVER` (Components)
 <table>
   <thead>
     <tr style="background-color: #34495e; color: white;">
@@ -156,10 +162,10 @@ Metodun SE24 interface yapısı ve parametre listesi:
 
 ---
 
-### 2️⃣ Table Type: `ZDAGNILAK_MAIL_ATTACH_TAB` *(Mail ile dosya gönderimi tablo tipi)*
-* **Line Type (Structure):** `ZDAGNILAK_MAIL_ATTACH`
+### 2️⃣ Table Type: `ZBRS_ATTACH_TAB` *(Mail ile dosya gönderimi tablo tipi)*
+* **Line Type:** `ZBRS_ATTACH` *(Mail dosya gönderimi yapısı)*
 
-#### Structure Components:
+#### Structure: `ZBRS_ATTACH` (Components)
 <table>
   <thead>
     <tr style="background-color: #34495e; color: white;">
@@ -191,15 +197,6 @@ Metodun SE24 interface yapısı ve parametre listesi:
       <td>0</td>
       <td>Kısa içerik tanımı</td>
     </tr>
-    <tr>
-      <td><b>SIZE</b></td>
-      <td>Types</td>
-      <td><code>SO_OBJ_LEN</code></td>
-      <td>NUMC</td>
-      <td>12</td>
-      <td>0</td>
-      <td>Ek dosya boyutu (Boş bırakılırsa otomatik hesaplanır)</td>
-    </tr>
     <tr style="background-color: #fcfcfc;">
       <td><b>ATTACH</b></td>
       <td>Types</td>
@@ -223,32 +220,16 @@ Metodun SE24 interface yapısı ve parametre listesi:
 
 ---
 
-## ⚡ En İyi Uygulama Örneği (Best Practice Usage)
+## 💡 Mimari Tasarım Notları
 
-```abap
-" 1. Alıcı Grubu Hazırlığı
-DATA(lt_receivers) = VALUE zdagnilak_mail_rec_tab(
-  ( receiver = 'harun@ajinomoto.com' cc = abap_false bcc = abap_false ) " TO
-).
+> [!IMPORTANT]
+> **ATTACH vs ATTACHX Ayrımı**  
+> Smartforms, Adobe Forms çıktıları veya saf binary `.xlsx` dosyaları gönderilirken ham veri bozulmasını önlemek için kesinlikle **`ATTACHX`** (`SOLIX_TAB`) alanı beslenmelidir[cite: 1]. Düz metin (TXT) veya HTML şablonları için ise **`ATTACH`** yeterlidir[cite: 1].
 
-" 2. Mail Gövdesi (HTML Örneği)
-DATA(lt_body) = VALUE soli_tab(
-  ( line = '<html><body><h2>Otomatik Sistem Bildirimi</h2>' )
-  ( line = '<p>İlgili lojistik/hakediş faturası başarıyla tetiklenmiştir.</p></body></html>' )
-).
+> [!TIP]
+> **50 Karakter Konu Sınırı**  
+> SAP yapısı gereği `I_SUBJECT` alanı 50 karakter ile sınırlıdır[cite: 1]. Mail başlığının bütünlüğünü korumak adına uzun başlık senaryolarında doğrudan `I_SUBJECT_LONG` (`STRING`) parametresini sisteme besleyin[cite: 1].
 
-" 3. Statik Metot Çağrısı
-zcl_dagnilak_send_mail=>send_mail(
-  EXPORTING
-    i_subject      = 'Hakediş Bildirimi'
-    i_type         = 'HTM'
-    t_receiver     = lt_receivers
-    t_text         = lt_body
-  IMPORTING
-    e_success      = DATA(lv_success)
-    e_message      = DATA(lv_msg)
-).
-
-IF lv_success = abap_true.
-  " Başarılı akış lojiği
-ENDIF.
+> [!WARNING]
+> **Kuyruk ve Performans Optimizasyonu**  
+> Döngü içerisinde (Örn: Toplu hakediş veya fatura mailleri) her satırda `COMMIT WORK` yapılması DB kilitlerine sebep olur. Performans için `I_NO_COMMIT = 'X'` parametresi geçilmeli ve döngü bittikten sonra harici tek bir `COMMIT WORK` tetiklenmelidir[cite: 1].
