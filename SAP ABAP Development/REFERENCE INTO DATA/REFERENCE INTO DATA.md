@@ -1,16 +1,51 @@
-![REFERENCE INTO DATA](https://github.com/user-attachments/assets/91330221-8b0e-4e5a-8d35-94a625d17860)
+" ====================================================================
+" 🛠️ DATA DEFINITIONS, CONSTANTS & INITIALIZATION
+" ====================================================================
 
--------------------------------------------------------------------------------------------------------
+" 1. Define semantic constants for type safety and readability
+CONSTANTS: BEGIN OF lc_tel_type,
+             landline TYPE c LENGTH 1 VALUE '1', " Sabit Hat
+             mobile   TYPE c LENGTH 1 VALUE '3', " Cep Telefonu
+           END OF lc_tel_type.
 
-check lt_muhatap is not initial.
-  move-corresponding lt_muhatap[ 1 ] to es_data.
+" 2. Define business-oriented local types
+TYPES: BEGIN OF ty_muhatap,
+         tel_type   TYPE c LENGTH 1, " 'r3_user' yerine anlamlı alan adı
+         telnr_long TYPE string,
+       END OF ty_muhatap,
+       tt_muhatap TYPE STANDARD TABLE OF ty_muhatap WITH EMPTY KEY.
 
-  loop at lt_muhatap reference into data(r_muhatap).
+TYPES: BEGIN OF ty_data,
+         telnr     TYPE string,
+         cep_telnr TYPE string,
+       END OF ty_data.
 
-    if r_muhatap->r3_user eq '3'.
-      es_data-cep_telnr = r_muhatap->telnr_long.
-    elseif r_muhatap->r3_user eq '1'.
-      es_data-telnr = r_muhatap->telnr_long.
-    endif.
+DATA: es_data TYPE ty_data.
 
-  endloop. 
+" 3. Populate internal table with semantic data
+DATA(lt_muhatap) = VALUE tt_muhatap(
+  ( tel_type = lc_tel_type-landline telnr_long = '+905551112233' )
+  ( tel_type = lc_tel_type-mobile   telnr_long = '+905329998877' )
+).
+
+" ====================================================================
+" 🚀 PROCESSING WITH REFERENCE INTO
+" ====================================================================
+
+IF lt_muhatap IS NOT INITIAL.
+
+  es_data = CORRESPONDING #( lt_muhatap[ 1 ] ).
+
+  LOOP AT lt_muhatap REFERENCE INTO DATA(lr_muhatap).
+
+    " Using constants instead of magic numbers ('1' or '3')
+    CASE lr_muhatap->tel_type.
+      WHEN lc_tel_type-mobile.
+        es_data-cep_telnr = lr_muhatap->telnr_long.
+      WHEN lc_tel_type-landline.
+        es_data-telnr     = lr_muhatap->telnr_long.
+    ENDCASE.
+
+  ENDLOOP.
+
+ENDIF.
