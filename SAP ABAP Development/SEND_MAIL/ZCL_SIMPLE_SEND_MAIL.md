@@ -66,12 +66,6 @@ Metodun SE24 interface yapısı ve parametre listesi:
     </tr>
     <tr>
       <td><img src="https://img.shields.io/badge/ℹ️-Importing-blue" alt="Imp"/></td>
-      <td><b>I_NO_COMMIT</b></td>
-      <td><code>TYPE FLAG OPTIONAL</code></td>
-      <td>Commit work yapılmasın</td>
-    </tr>
-    <tr>
-      <td><img src="https://img.shields.io/badge/ℹ️-Importing-blue" alt="Imp"/></td>
       <td><b>I_IMPORTANCE</b></td>
       <td><code>TYPE BCS_DOCIMP OPTIONAL</code></td>
       <td>Doküman önceliği</td>
@@ -79,7 +73,7 @@ Metodun SE24 interface yapısı ve parametre listesi:
     <tr style="background-color: #f1f5f9;">
       <td><img src="https://img.shields.io/badge/ℹ️-Importing-blue" alt="Imp"/></td>
       <td><b>T_RECEIVER</b></td>
-      <td><code>TYPE ZBRS_MAIL_REC_TAB OPTIONAL</code></td>
+      <td><code>TYPE ZDAGNILAK_MAIL_REC_TAB OPTIONAL</code></td>
       <td>Mail receiver</td>
     </tr>
     <tr style="background-color: #f1f5f9;">
@@ -91,14 +85,14 @@ Metodun SE24 interface yapısı ve parametre listesi:
     <tr style="background-color: #f1f5f9;">
       <td><img src="https://img.shields.io/badge/ℹ️-Importing-blue" alt="Imp"/></td>
       <td><b>T_ATTACH</b></td>
-      <td><code>TYPE ZBRS_ATTACH_TAB OPTIONAL</code></td>
+      <td><code>TYPE ZDAGNILAK_MAIL_ATTACH_TAB OPTIONAL</code></td>
       <td>Mail ile dosya gönderimi tablo tipi</td>
     </tr>
     <tr>
       <td><img src="https://img.shields.io/badge/⬆️-Exporting-orange" alt="Exp"/></td>
       <td><b>E_MESSAGE</b></td>
-      <td><code>TYPE TEXT100</code></td>
-      <td>Metin (100 krkt.)</td>
+      <td><code>TYPE BAPI_MSG</code></td>
+      <td>BAPI Mesaj Metni</td>
     </tr>
     <tr>
       <td><img src="https://img.shields.io/badge/⬆️-Exporting-orange" alt="Exp"/></td>
@@ -113,7 +107,7 @@ Metodun SE24 interface yapısı ve parametre listesi:
 
 ## 🗂️ SE11: ABAP Dictionary — Bağımlı Yapılar
 
-### 1️⃣ Table Type: `ZBRS_MAIL_REC_TAB` *(Mail alıcıları tablo tipi)*
+### 1️⃣ Table Type: `ZDAGNILAK_MAIL_REC_TAB` *(Mail alıcıları tablo tipi)*
 * **Line Type:** `ZBRS_MAIL_RECEIVER` *(Mail receiver)*
 
 #### Structure: `ZBRS_MAIL_RECEIVER` (Components)
@@ -162,7 +156,7 @@ Metodun SE24 interface yapısı ve parametre listesi:
 
 ---
 
-### 2️⃣ Table Type: `ZBRS_ATTACH_TAB` *(Mail ile dosya gönderimi tablo tipi)*
+### 2️⃣ Table Type: `ZDAGNILAK_MAIL_ATTACH_TAB` *(Mail ile dosya gönderimi tablo tipi)*
 * **Line Type:** `ZBRS_ATTACH` *(Mail dosya gönderimi yapısı)*
 
 #### Structure: `ZBRS_ATTACH` (Components)
@@ -232,4 +226,4 @@ Metodun SE24 interface yapısı ve parametre listesi:
 
 > [!WARNING]
 > **Kuyruk ve Performans Optimizasyonu**  
-> Döngü içerisinde (Örn: Toplu hakediş veya fatura mailleri) her satırda `COMMIT WORK` yapılması DB kilitlerine sebep olur. Performans için `I_NO_COMMIT = 'X'` parametresi geçilmeli ve döngü bittikten sonra harici tek bir `COMMIT WORK` tetiklenmelidir[cite: 1].
+> Döngü içerisinde (Örn: Toplu hakediş veya fatura mailleri) her satırda `COMMIT WORK` yapılması DB kilitlerine sebep olur. Performans için harici entegrasyonlarda commit stratejilerine dikkat edilmeli ve yoğun yüklerde mailler toplu işlenmelidir.
