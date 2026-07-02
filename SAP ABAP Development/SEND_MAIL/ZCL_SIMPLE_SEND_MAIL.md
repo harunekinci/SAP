@@ -4,19 +4,19 @@
 
 <div align="center">
   <img src="https://img.shields.io/badge/SAP-ABAP_7.40%2B-0089D0?style=for-the-badge&logo=sap&logoColor=white" alt="SAP ABAP" />
-  <img src="https://img.shields.io/badge/MODULE-BCS_%2F_SMTP-2E7D32?style=for-the-badge&logo=opsgenie&logoColor=white" alt="Module" />
+  <img src="https://img.shields.io/badge/METOT-SEND__MAIL-2E7D32?style=for-the-badge&logo=opsgenie&logoColor=white" alt="Method" />
   <img src="https://img.shields.io/badge/STATUS-READY_FOR_PROD-C62828?style=for-the-badge" alt="Status" />
 </div>
 
 <br/>
 
-> **Sistem Mimarı Özeti:** `ZCL_SIMPLE_SEND_MAIL`, SAP Business Communication Services (BCS) mimarisini nesne tabanlı katmanlarla sarmalayan kurumsal bir e-posta framework bileşenidir. Geliştiricileri SMTP konfigürasyon detaylarından kurtararak temiz, deklaratif ve tek merkezden yönetilebilir bir arayüz sağlar.
+> **Sistem Mimarı Özeti:** `ZCL_SIMPLE_SEND_MAIL`, SAP Business Communication Services (BCS) mimarisini nesne tabanlı katmanlarla sarmalayan kurumsal bir e-posta framework bileşenidir. Geliştiricileri SMTP konfigürasyon detaylarından kurtararak `zcl_simple_send_mail=>send_mail( )` statik metodu üzerinden temiz, deklaratif ve tek merkezden yönetilebilir bir arayüz sağlar.
 
 ---
 
-## 🛠️ SE24: Class Builder — Metot İmza Yapısı (Signature)
+## 🛠️ SE24: Class Builder — zcl_simple_send_mail=>send_mail( ) İmza Yapısı
 
-Sınıfın ana metoduna ait parametre listesi ve SE24 interface yapısı:
+Metodun SE24 interface yapısı ve parametre listesi:
 
 <table>
   <thead>
@@ -224,7 +224,7 @@ Sınıfın ana metoduna ait parametre listesi ve SE24 interface yapısı:
 
 > [!IMPORTANT]
 > **ATTACH vs ATTACHX Ayrımı**  
-> Smartforms, Adobe Forms çıktıları veya saf binary `.xlsx` dosyaları gönderilirken ham veri bozulmasını önlemek için kesinlikle **`ATTACHX`** (`SOLIX_TAB`) alanı beslenmelidir. Düz metin (TXT) veya HTML şablonları için ise **`ATTACH`** yeterlidir.
+> Smartforms, Adobe Forms çıktıları veya saf binary `.xlsx` dosyaları gönderilirken ham veri bozulmasını önlemek için kesinlikle **`ATTACHX`** (`SOLIX_TAB`) alanı beslenmelidir[cite: 1]. Düz metin (TXT) veya HTML şablonları için ise **`ATTACH`** yeterlidir[cite: 1].
 
 > [!TIP]
 > **50 Karakter Konu Sınırı**  
