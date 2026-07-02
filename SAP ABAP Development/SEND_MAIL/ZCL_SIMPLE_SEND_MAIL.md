@@ -230,7 +230,7 @@ Metodun SE24 interface yapısı ve parametre listesi:
 > **Kuyruk ve Performans Optimizasyonu**  
 > Döngü içerisinde (Örn: Toplu hakediş veya fatura mailleri) her satırda `COMMIT WORK` yapılması DB kilitlerine sebep olur. Performans için harici entegrasyonlarda commit stratejilerine dikkat edilmeli ve yoğun yüklerde mailler toplu işlenmelidir.
 
-> [!Konfigürasyon]
+> 
 ```abap
 class-methods send_mail
   importing
