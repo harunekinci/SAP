@@ -18,7 +18,8 @@
 
 Metodun SE24 interface yapısı ve parametre listesi:
 
- class-methods send_mail
+> [!IMPORTANT]
+>  class-methods send_mail
       importing
         i_sender       type ad_smtpadr                optional
         i_sender_name  type ad_smtpadr                optional
