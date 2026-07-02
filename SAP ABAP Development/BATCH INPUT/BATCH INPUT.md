@@ -1,64 +1,63 @@
-# ✉️ BDC Yardımcı Sınıfı (Reusable BDC Builder)
+# ✉️ BDC Yardımcı Metotları ve SALV Event Yönetimi
 
 <br/>
 
 <div align="center">
   <img src="https://img.shields.io/badge/SAP-ABAP_7.40%2B-0089D0?style=for-the-badge&logo=sap&logoColor=white" alt="SAP ABAP" />
   <img src="https://img.shields.io/badge/TECHNIQUE-BDC-2E7D32?style=for-the-badge" alt="BDC" />
-  <img src="https://img.shields.io/badge/CATEGORY-CALL_TRANSACTION-C62828?style=for-the-badge" alt="BDC Builder" />
+  <img src="https://img.shields.io/badge/CATEGORY-SALV_EVENT-C62828?style=for-the-badge" alt="SALV" />
 </div>
 
 <br/>
 
-> **Sistem Mimarı Özeti:** BDC (Batch Data Communication) kayıtları oluşturulurken aynı `BDC_DYNPRO` ve `BDC_FIELD` satırlarının sürekli tekrar yazılması yerine yardımcı (helper) bir sınıf oluşturularak ekran ve alan bilgileri merkezi olarak yönetilebilir. Böylece BDC kodu daha okunabilir, tekrar kullanılabilir ve bakım maliyeti düşük hale gelir.
+> **Sistem Mimarı Özeti:** Bu yapı, SALV Toolbar üzerinden tetiklenen kullanıcı işlemlerini Event sınıfı içerisinde yönetirken, BDC kayıtlarının oluşturulmasını da yardımcı (`bdc_dynpro` ve `bdc_field`) metotları ile merkezi hale getirir. Böylece BDC senaryoları tekrar kullanılabilir, okunabilir ve bakım yapılabilir bir yapıya kavuşur.
 
 ---
 
-## 🛠️ Yardımcı Metotlar
+## 🛠️ Yapının Bileşenleri
 
-### 1️⃣ `BDC_DYNPRO`
-
-| Parametre | Tip | Açıklama |
-|-----------|-----|----------|
-| **PROGRAM** | `BDCDATA-PROGRAM` | İşlem yapılacak program |
-| **DYNPRO** | `BDCDATA-DYNPRO` | Screen numarası |
-
----
-
-### 2️⃣ `BDC_FIELD`
-
-| Parametre | Tip | Açıklama |
-|-----------|-----|----------|
-| **FNAM** | `BDCDATA-FNAM` | Screen alanı |
-| **FVAL** | `TYPE DATA` | Yazılacak değer |
+| Bileşen | Görevi |
+|---------|--------|
+| **on_user_command** | Toolbar butonlarına basıldığında ilgili işlemi başlatır. |
+| **bdc_dynpro** | Yeni bir Dynpro kaydı oluşturur (`DYNBEGIN = 'X'`). |
+| **bdc_field** | Dynpro içerisine alan ve değer ekler. |
+| **process_data** | BDC kaydını oluşturur ve `CALL TRANSACTION` ile çalıştırır. |
+| **CONVERT_BDCMSGCOLL_TO_BAPIRET2** | BDC mesajlarını okunabilir BAPIRET2 formatına dönüştürür. |
 
 ---
 
-## 💻 Kullanım Akışı
+## 💻 İşleyiş
 
 ```text
-Toolbar Event
+SALV Toolbar
       │
       ▼
-Process_Data
+on_user_command
       │
       ▼
-BDC_DYNPRO()
+LOOP GT_DATA
       │
       ▼
-BDC_FIELD()
+PROCESS_DATA
       │
       ▼
-CALL TRANSACTION
+BDC_DYNPRO
+BDC_FIELD
       │
       ▼
-BDC Mesajlarını Oku
+CALL TRANSACTION VB11
       │
       ▼
-BAPIRET2'ye Çevir
+BDC Mesajları
       │
       ▼
-ALV Status Güncelle
+BAPIRET2
+      │
+      ▼
+Status Güncelle
+      │
+      ▼
+SALV Refresh
 ```
 
 ---
@@ -66,16 +65,16 @@ ALV Status Güncelle
 ## 💡 Mimari Tasarım Notları
 
 > [!IMPORTANT]
-> `BDCDATA` tablosunu oluşturan kodlar merkezi metotlar içerisine alınarak tekrar eden kod blokları azaltılabilir.
+> `bdc_dynpro` ve `bdc_field` metotları sayesinde tüm BDC kayıt oluşturma işlemleri tek noktadan yönetilir. Yeni ekran veya alan eklemek yalnızca bu yardımcı metotların çağrılmasıyla mümkündür.
 
 > [!TIP]
-> `VALUE #( BASE gt_bdctable ... )` kullanımı klasik `APPEND` yapısına göre daha okunabilir ve modern ABAP söz dizimine uygundur.
+> `VALUE #( BASE ... )` kullanımı APPEND yerine immutable yapıyı desteklediğinden kod okunabilirliğini artırır.
 
 > [!TIP]
-> `CALL TRANSACTION` sonrasında oluşan `BDCMSGCOLL` mesajları `CONVERT_BDCMSGCOLL_TO_BAPIRET2` fonksiyonu ile standart `BAPIRET2` formatına dönüştürülebilir.
+> `CONVERT_BDCMSGCOLL_TO_BAPIRET2` fonksiyonu kullanılarak teknik BDC mesajları kullanıcı dostu hale getirilebilir.
 
 > [!WARNING]
-> Her işlem sonunda `GT_BDCTABLE` temizlenmelidir. Aksi halde sonraki BDC çalıştırmalarında önceki ekran kayıtları da kullanılacağı için beklenmeyen sonuçlar oluşabilir.
+> Her işlem sonunda `GT_BDCTABLE` mutlaka temizlenmelidir. Aksi halde önceki BDC kayıtları sonraki işlemde tekrar çalıştırılabilir.
 
 ---
 
@@ -97,11 +96,23 @@ CLASS lcl_handle_events DEFINITION.
         fnam TYPE bdcdata-fnam
         fval TYPE data.
 
+    TYPES:
+      BEGIN OF ty_header,
+        columnname TYPE lvc_fname,
+        columntext TYPE scrtext_l,
+      END OF ty_header,
+      ty_header_tab TYPE TABLE OF ty_header,
+      ty_items_tab  TYPE TABLE OF zbrssd0601,
+      ty_log_tab    TYPE TABLE OF zbrssd0602_log.
+
     METHODS on_user_command
       FOR EVENT added_function OF cl_salv_events
-      IMPORTING e_salv_function.
+      IMPORTING
+        e_salv_function.
 
 ENDCLASS.
+
+
 
 CLASS lcl_handle_events IMPLEMENTATION.
 
@@ -122,8 +133,7 @@ CLASS lcl_handle_events IMPLEMENTATION.
           refresh_mode = if_salv_c_refresh=>full ).
 
         DATA(lr_columns) = gr_salv->get_columns( ).
-
-        lr_columns->set_optimize( abap_true ).
+        lr_columns->set_optimize( 'X' ).
 
         DATA lr_content TYPE REF TO cl_salv_form_element.
 
@@ -133,35 +143,45 @@ CLASS lcl_handle_events IMPLEMENTATION.
 
         gr_salv->set_top_of_list( lr_content ).
 
+      WHEN OTHERS.
+
     ENDCASE.
 
   ENDMETHOD.
 
-  METHOD bdc_dynpro.
 
-    gt_bdctable = VALUE #(
-      BASE gt_bdctable
-      (
-        program  = program
-        dynpro   = dynpro
-        dynbegin = abap_true
-      ) ).
-
-  ENDMETHOD.
 
   METHOD bdc_field.
 
-    gt_bdctable = VALUE #(
-      BASE gt_bdctable
-      (
-        fnam = fnam
-        fval = fval
-      ) ).
+    gt_bdctable =
+      VALUE #(
+        BASE gt_bdctable
+        (
+          fnam = fnam
+          fval = fval
+        ) ).
+
+  ENDMETHOD.
+
+
+
+  METHOD bdc_dynpro.
+
+    gt_bdctable =
+      VALUE #(
+        BASE gt_bdctable
+        (
+          program  = program
+          dynpro   = dynpro
+          dynbegin = 'X'
+        ) ).
 
   ENDMETHOD.
 
 ENDCLASS.
+```
 
+```abap
 FORM process_data USING is_data LIKE gt_data.
 
   DATA:
@@ -188,7 +208,93 @@ FORM process_data USING is_data LIKE gt_data.
     fnam = 'D000-KSCHL'
     fval = 'BMZB' ).
 
-  "... diğer BDC ekranları ...
+  lcl_handle_events=>bdc_dynpro(
+    program = 'SAPLV14A'
+    dynpro  = '0100' ).
+
+  IF p_1 = 'X'.
+
+    lcl_handle_events=>bdc_field(
+      fnam = 'BDC_CURSOR'
+      fval = 'RV130-SELKZ(01)' ).
+
+  ELSE.
+
+    lcl_handle_events=>bdc_field(
+      fnam = 'BDC_CURSOR'
+      fval = 'RV130-SELKZ(02)' ).
+
+    lcl_handle_events=>bdc_field(
+      fnam = 'RV130-SELKZ(02)'
+      fval = 'X' ).
+
+  ENDIF.
+
+  lcl_handle_events=>bdc_field(
+    fnam = 'BDC_OKCODE'
+    fval = '=WEIT' ).
+
+  lcl_handle_events=>bdc_dynpro(
+    program = 'SAPMV13D'
+    dynpro  = COND #(
+                WHEN p_1 = 'X'
+                THEN '1601'
+                ELSE '1602' ) ).
+
+  lcl_handle_events=>bdc_field(
+    fnam = 'BDC_OKCODE'
+    fval = '/00' ).
+
+  lcl_handle_events=>bdc_field(
+    fnam = 'KOMGD-VKORG'
+    fval = is_data-vkorg ).
+
+  lcl_handle_events=>bdc_field(
+    fnam = 'KOMGD-VTWEG'
+    fval = is_data-vtweg ).
+
+  IF p_2 = 'X'.
+
+    lcl_handle_events=>bdc_field(
+      fnam = 'KOMGD-KDGRP'
+      fval = is_data-kdgrp ).
+
+  ENDIF.
+
+  lcl_handle_events=>bdc_field(
+    fnam = 'D000-DATAB'
+    fval = |{ is_data-datab DATE = USER }| ).
+
+  lcl_handle_events=>bdc_field(
+    fnam = 'D000-DATBI'
+    fval = |{ is_data-datbi DATE = USER }| ).
+
+  lcl_handle_events=>bdc_field(
+    fnam = 'MV13D-SUGRV'
+    fval = '0004' ).
+
+  lcl_handle_events=>bdc_field(
+    fnam = 'KOMGD-MATNR(01)'
+    fval = |{ is_data-matnr ALPHA = IN }| ).
+
+  lcl_handle_events=>bdc_field(
+    fnam = 'KONDD-SMATN(01)'
+    fval = |{ is_data-smatn ALPHA = IN }| ).
+
+  lcl_handle_events=>bdc_field(
+    fnam = 'KONDD-SUGRD(01)'
+    fval = '0004' ).
+
+  lcl_handle_events=>bdc_dynpro(
+    program = 'SAPMV13D'
+    dynpro  = COND #(
+                WHEN p_1 = 'X'
+                THEN '1601'
+                ELSE '1602' ) ).
+
+  lcl_handle_events=>bdc_field(
+    fnam = 'BDC_OKCODE'
+    fval = '=SICH' ).
 
   CALL TRANSACTION 'VB11'
     USING lcl_handle_events=>gt_bdctable
@@ -200,11 +306,11 @@ FORM process_data USING is_data LIKE gt_data.
       imt_bdcmsgcoll = lt_mes_tab
       ext_return     = lt_return.
 
-  LOOP AT lt_return INTO DATA(ls_return)
+  LOOP AT lt_return INTO DATA(ls_data)
        WHERE type = 'E'.
 
+    is_data-status2 = ls_data-message.
     is_data-status  = '1'.
-    is_data-status2 = ls_return-message.
 
     EXIT.
 
@@ -214,7 +320,7 @@ FORM process_data USING is_data LIKE gt_data.
     is_data-status = '3'.
   ENDIF.
 
-  REFRESH lcl_handle_events=>gt_bdctable.
+  REFRESH lcl_handle_events=>gt_bdctable[].
 
 ENDFORM.
 ```
