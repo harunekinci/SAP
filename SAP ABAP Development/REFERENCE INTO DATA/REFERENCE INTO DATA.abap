@@ -23,10 +23,8 @@ TYPES: BEGIN OF ty_data,
 DATA: es_data TYPE ty_data.
 
 " 3. Populate internal table with semantic data
-DATA(lt_muhatap) = VALUE tt_muhatap(
-  ( tel_type = lc_tel_type-landline telnr_long = '+905551112233' )
-  ( tel_type = lc_tel_type-mobile   telnr_long = '+905329998877' )
-).
+DATA(lt_muhatap) = VALUE tt_muhatap( ( tel_type = lc_tel_type-landline telnr_long = '+905551112233' )
+                                     ( tel_type = lc_tel_type-mobile   telnr_long = '+905329998877' ) ).
 
 " ====================================================================
 " 🚀 PROCESSING WITH REFERENCE INTO
