@@ -16,6 +16,9 @@
 
 ## 🛠️ Kullanılan Yapılar
 
+## Sorun : <img width="1241" height="247" alt="image" src="https://github.com/user-attachments/assets/9ebf4dc3-f56a-4e7f-8868-409414f8e472" />
+
+
 | Yapı | Amaç |
 |------|------|
 | **SORT** | Control Break ifadelerinin doğru çalışabilmesi için tabloyu sıralar. |
