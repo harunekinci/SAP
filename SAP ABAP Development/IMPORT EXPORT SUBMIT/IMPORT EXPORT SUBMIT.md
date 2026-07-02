@@ -1,43 +1,31 @@
-# ✉️ CL_SALV_BS_RUNTIME_INFO & EXPORT TO MEMORY ID
+# ✉️ EXPORT TO MEMORY ID & CL_SALV_BS_RUNTIME_INFO
 
 <br/>
 
 <div align="center">
   <img src="https://img.shields.io/badge/SAP-ABAP_7.40%2B-0089D0?style=for-the-badge&logo=sap&logoColor=white" alt="SAP ABAP" />
-  <img src="https://img.shields.io/badge/CLASS-CL__SALV__BS__RUNTIME__INFO-2E7D32?style=for-the-badge" alt="Class" />
-  <img src="https://img.shields.io/badge/CATEGORY-MEMORY_%26_ALV-C62828?style=for-the-badge" alt="Category" />
+  <img src="https://img.shields.io/badge/TECHNIQUE-MEMORY__TRANSFER-2E7D32?style=for-the-badge" alt="Technique" />
+  <img src="https://img.shields.io/badge/CATEGORY-DATA_EXTRACTION-C62828?style=for-the-badge" alt="Category" />
 </div>
 
 <br/>
 
-> **Sistem Mimarı Özeti:** SAP'te başka bir programın ürettiği ALV verisine erişmek için iki yaygın yöntem bulunur. İlk yöntem olan `CL_SALV_BS_RUNTIME_INFO`, hedef programa hiçbir müdahalede bulunmadan ALV ekranına gönderilecek veriyi bellekten yakalamaya imkan sağlar. İkinci yöntem ise `EXPORT TO MEMORY ID` kullanılarak hedef programa küçük bir geliştirme yapılıp verinin Shared Memory üzerinden çağıran programa aktarılmasıdır.
+> **Sistem Mimarı Özeti:** Bir raporun ürettiği veriyi yeniden kullanmanın iki yaygın yöntemi vardır. Eğer kaynak programa müdahale edilebiliyorsa **EXPORT / IMPORT TO MEMORY ID** ile veri doğrudan paylaşılabilir. Kaynak programa müdahale edilemiyorsa **CL_SALV_BS_RUNTIME_INFO** kullanılarak ALV ekrana basılmadan oluşturulan veri bellekten okunabilir.
 
 ---
 
-## 🛠️ Kullanılan Yapılar
+## 🛠️ Yöntemler
 
-| Yapı | Açıklama |
-|------|----------|
-| **CL_SALV_BS_RUNTIME_INFO=>SET** | ALV ekranını göstermeden veriyi Runtime Memory'e yönlendirir. |
-| **CL_SALV_BS_RUNTIME_INFO=>GET_DATA_REF** | Yakalanan ALV verisinin referansını döndürür. |
-| **CL_SALV_BS_RUNTIME_INFO=>CLEAR** | Runtime mekanizmasını temizler. Mutlaka çağrılmalıdır. |
-| **EXPORT TO MEMORY ID** | Veriyi ABAP Memory'e aktarır. |
-| **IMPORT FROM MEMORY ID** | Aktarılan veriyi başka programda okur. |
-| **SUBMIT ... AND RETURN** | Hedef programı çağırıp kontrolü geri döndürür. |
+| Yöntem | Kullanım Senaryosu |
+|--------|--------------------|
+| **EXPORT / IMPORT TO MEMORY ID** | Kaynak programa müdahale edilebiliyorsa |
+| **CL_SALV_BS_RUNTIME_INFO** | Standart veya değiştirilemeyen ALV raporlarının verisini okumak için |
 
 ---
 
-## 📌 Yöntem Karşılaştırması
+## 📌 EXPORT / IMPORT TO MEMORY ID
 
-| Yöntem | Ne Zaman Kullanılır |
-|---------|---------------------|
-| **CL_SALV_BS_RUNTIME_INFO** | Hedef programa müdahale edilemiyorsa |
-| **EXPORT TO MEMORY ID** | Hedef program geliştirilebiliyorsa |
-| **IMPORT FROM MEMORY ID** | EXPORT edilen veriyi okumak için |
-
----
-
-## 💻 EXPORT TO MEMORY ID
+Program, `P_MEMID` parametresi dolu geldiğinde ALV'yi göstermeden veriyi Memory ID'ye aktarır.
 
 ```abap
 IF p_memid IS NOT INITIAL.
@@ -56,13 +44,32 @@ ELSE.
 ENDIF.
 ```
 
----
-
-## 💻 CL_SALV_BS_RUNTIME_INFO
+### Memory'den Okunması
 
 ```abap
-DATA lr_data TYPE REF TO data.
+DATA lv_memid TYPE text60 VALUE 'ZSD_ENVANTER'.
 
+FREE MEMORY ID lv_memid.
+
+EXPORT lt_data[]
+       TO MEMORY ID lv_memid.
+
+SUBMIT zbrs_sd_lastik_envanter
+       AND RETURN
+       WITH p_memid = lv_memid.
+
+IMPORT itab
+       TO lt_data
+       FROM MEMORY ID lv_memid.
+```
+
+---
+
+## 📌 CL_SALV_BS_RUNTIME_INFO
+
+Kaynak programa hiçbir müdahale yapılmadan ALV verisi okunabilir.
+
+```abap
 cl_salv_bs_runtime_info=>set(
   EXPORTING
     display  = abap_false
@@ -70,26 +77,53 @@ cl_salv_bs_runtime_info=>set(
     data     = abap_true ).
 
 SUBMIT rm07mm60
-       WITH matnr = '123'
        AND RETURN.
 
-TRY.
-
-    cl_salv_bs_runtime_info=>get_data_ref(
-      IMPORTING
-        r_data = lr_data ).
-
-  CATCH cx_salv_bs_sc_runtime_info.
-
-ENDTRY.
+cl_salv_bs_runtime_info=>get_data_ref(
+  IMPORTING
+    r_data = lr_data ).
 
 cl_salv_bs_runtime_info=>clear( ).
 ```
 
 ---
 
+## 💡 Mimari Tasarım Notları
+
 > [!IMPORTANT]
-> `CL_SALV_BS_RUNTIME_INFO=>CLEAR( )` çağrısı mutlaka yapılmalıdır. Aksi halde sonraki ALV ekranları da Runtime Mode'da çalışmaya devam edebilir.
+> `EXPORT / IMPORT TO MEMORY ID` yöntemi kullanılacaksa kaynak programın Memory ID desteği vermesi gerekir.
 
 > [!TIP]
-> Hedef program sizin geliştirdiğiniz bir Z Programı ise `EXPORT TO MEMORY ID` yöntemi daha hızlı ve daha güvenilirdir. Standart SAP programlarında ise çoğunlukla `CL_SALV_BS_RUNTIME_INFO` tercih edilir.
+> Standart SAP raporları veya müdahale edilemeyen Z raporlarında `CL_SALV_BS_RUNTIME_INFO` en pratik veri alma yöntemidir.
+
+> [!WARNING]
+> `CL_SALV_BS_RUNTIME_INFO=>CLEAR( )` çağrısı mutlaka yapılmalıdır. Aksi halde sonraki ALV ekranları beklenmeyen şekilde etkilenebilir.
+
+---
+
+## 💻 Örnek Function Module
+
+```abap
+FUNCTION zbrs_sd_lastik_envanter.
+
+  DATA:
+    lv_memid TYPE text60 VALUE 'ZSD_ENVANTER',
+    lt_data  TYPE TABLE OF zbrssd0640.
+
+  FREE MEMORY ID lv_memid.
+
+  EXPORT lt_data
+         TO MEMORY ID lv_memid.
+
+  SUBMIT zbrs_sd_lastik_envanter
+         AND RETURN
+         WITH p_memid = lv_memid.
+
+  IMPORT itab
+         TO lt_data
+         FROM MEMORY ID lv_memid.
+
+  et_data = CORRESPONDING #( lt_data ).
+
+ENDFUNCTION.
+```
