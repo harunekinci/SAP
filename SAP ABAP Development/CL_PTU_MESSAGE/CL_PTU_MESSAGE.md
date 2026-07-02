@@ -14,6 +14,8 @@
 
 ---
 
+<img width="609" height="210" alt="image" src="https://github.com/user-attachments/assets/305fb11a-f3f8-43eb-be6d-2e27b4f85a42" />
+
 ## 🛠️ SE24: Class Builder — cl_ptu_message Metot Yapıları
 
 Sınıfın öne çıkan metotları ve parametre listesi:
