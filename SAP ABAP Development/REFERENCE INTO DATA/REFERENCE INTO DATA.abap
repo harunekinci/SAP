@@ -10,7 +10,7 @@ CONSTANTS: BEGIN OF lc_tel_type,
 
 " 2. Define business-oriented local types
 TYPES: BEGIN OF ty_muhatap,
-         tel_type   TYPE c LENGTH 1, " 'r3_user' yerine anlamlı alan adı
+         tel_type   TYPE c LENGTH 1, 
          telnr_long TYPE string,
        END OF ty_muhatap,
        tt_muhatap TYPE STANDARD TABLE OF ty_muhatap WITH EMPTY KEY.
