@@ -18,6 +18,22 @@
 
 Metodun SE24 interface yapısı ve parametre listesi:
 
+ class-methods send_mail
+      importing
+        i_sender       type ad_smtpadr                optional
+        i_sender_name  type ad_smtpadr                optional
+        i_subject      type so_obj_des                optional
+        i_subject_long type string                    optional
+        i_type         type so_obj_tp                 default 'RAW'
+        i_mail_group   type soobjinfi1-obj_name       optional
+        i_importance   type bcs_docimp                optional
+        t_receiver     type zdagnilak_mail_rec_tab    optional
+        t_text         type soli_tab                  optional
+        t_attach       type zdagnilak_mail_attach_tab optional
+      exporting
+        e_message      type bapi_msg
+        e_success      type flag.
+
 <table>
   <thead>
     <tr style="background-color: #1F4E79; color: white;">
