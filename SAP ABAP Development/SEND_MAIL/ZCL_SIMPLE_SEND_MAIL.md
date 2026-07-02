@@ -19,22 +19,6 @@
 Metodun SE24 interface yapısı ve parametre listesi:
 
 ### ABAP Metot Deklarasyonu
-
-class-methods send_mail
-  importing
-    i_sender       type ad_smtpadr                optional
-    i_sender_name  type ad_smtpadr                optional
-    i_subject      type so_obj_des                optional
-    i_subject_long type string                    optional
-    i_type         type so_obj_tp                 default 'RAW'
-    i_mail_group   type soobjinfi1-obj_name       optional
-    i_importance   type bcs_docimp                optional
-    t_receiver     type zdagnilak_mail_rec_tab    optional
-    t_text         type soli_tab                  optional
-    t_attach       type zdagnilak_mail_attach_tab optional
-  exporting
-    e_message      type bapi_msg
-    e_success      type flag.
     
 <table>
   <thead>
@@ -245,3 +229,21 @@ class-methods send_mail
 > [!WARNING]
 > **Kuyruk ve Performans Optimizasyonu**  
 > Döngü içerisinde (Örn: Toplu hakediş veya fatura mailleri) her satırda `COMMIT WORK` yapılması DB kilitlerine sebep olur. Performans için harici entegrasyonlarda commit stratejilerine dikkat edilmeli ve yoğun yüklerde mailler toplu işlenmelidir.
+
+> [!Konfigürasyon]
+```abap
+class-methods send_mail
+  importing
+    i_sender       type ad_smtpadr                optional
+    i_sender_name  type ad_smtpadr                optional
+    i_subject      type so_obj_des                optional
+    i_subject_long type string                    optional
+    i_type         type so_obj_tp                 default 'RAW'
+    i_mail_group   type soobjinfi1-obj_name       optional
+    i_importance   type bcs_docimp                optional
+    t_receiver     type zdagnilak_mail_rec_tab    optional
+    t_text         type soli_tab                  optional
+    t_attach       type zdagnilak_mail_attach_tab optional
+  exporting
+    e_message      type bapi_msg
+    e_success      type flag.
