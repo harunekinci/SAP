@@ -1,83 +1,140 @@
-GitHub deponuzun (Repository) ana sayfasında ya da `docs/` klasöründe profesyonel, temiz ve modern bir teknik dokümantasyon olarak sergileyebileceğiniz, Markdown (`.md`) formatındaki hazır dosya içeriği aşağıdadır.
+# ✉️ ZCL_SIMPLE_SEND_MAIL
 
-Projenize doğrudan **`README.md`** veya **`ZCL_SIMPLE_SEND_MAIL.md`** adıyla ekleyebilirsiniz.
+<br/>
 
----
+<div align="center">
+  <img src="https://img.shields.io/badge/SAP-ABAP_7.40%2B-0089D0?style=for-the-badge&logo=sap&logoColor=white" alt="SAP ABAP" />
+  <img src="https://img.shields.io/badge/MODULE-BCS_%2F_SMTP-2E7D32?style=for-the-badge&logo=opsgenie&logoColor=white" alt="Module" />
+  <img src="https://img.shields.io/badge/STATUS-READY_FOR_PROD-C62828?style=for-the-badge" alt="Status" />
+</div>
 
-```markdown
-# ZCL_SIMPLE_SEND_MAIL
+<br/>
 
-![SAP](https://img.shields.io/badge/SAP-ABAP_7.40%2B-blue?logo=sap)
-![Status](https://img.shields.io/badge/Status-Active-success)
-![Object Type](https://img.shields.io/badge/Object_Type-Class-orange)
-
-`ZCL_SIMPLE_SEND_MAIL` sınıfı, SAP Business Communication Services (BCS) mimarisini nesne tabanlı yöntemlerle sarmalayarak, sistem içi ve dışı e-posta gönderim süreçlerini standartlaştırmak, kod karmaşıklığını azaltmak ve mail operasyonlarını tek bir merkezden yönetmek amacıyla geliştirilmiş bir **Core Framework** bileşenidir.
-
-Sınıf; arka planda yürütülen SMTP konfigürasyonlarını, veri türü dönüştürmelerini (MIME, binary, text) ve alıcı gruplama mantıklarını soyutlayarak geliştiriciye deklaratif, esnek ve temiz bir arayüz sunar.
+> **Sistem Mimarı Özeti:** `ZCL_SIMPLE_SEND_MAIL`, SAP Business Communication Services (BCS) mimarisini nesne tabanlı katmanlarla sarmalayan kurumsal bir e-posta framework bileşenidir. Geliştiricileri SMTP konfigürasyon detaylarından kurtararak temiz, deklaratif ve tek merkezden yönetilebilir bir arayüz sağlar.
 
 ---
 
-## 🛠️ Metot Parametreleri (Signature)
+## 🛠️ Metot İmza Yapısı (Signature)
 
-Sınıfın ana gönderim metodunda yer alan parametre yapısı ve türleri aşağıdaki tabloda listelenmiştir:
+Sıradan tablolar yerine, parametre türlerine göre renklendirilmiş kurumsal arayüz tablosu:
 
-| Parametre Adı | Türü | Veri Tipi (Type Spec.) | Opsiyonel | Kısa Açıklama |
-| :--- | :--- | :--- | :---: | :--- |
-| **`I_SENDER`** | Importing | `AD_SMTPADR` | Evet | Gönderen e-posta adresi |
-| **`I_SENDER_NAME`** | Importing | `AD_SMTPADR` | Evet | Gönderen mail adresi tanımı (Görünen Ad) |
-| **`I_SUBJECT`** | Importing | `SO_OBJ_DES` | Evet | Mail konusu (Kısa - Max 50 Karakter) |
-| **`I_SUBJECT_LONG`** | Importing | `STRING` | Evet | Mail konusu (Uzun - Karakter sınırı yok) |
-| **`I_TYPE`** | Importing | `SO_OBJ_TP` | Varsayılan: `'RAW'` | Döküman tipi için kod (RAW, HTM, vb.) |
-| **`I_MAIL_GROUP`** | Importing | `SOOBJINFI1-OBJ_NAME` | Evet | Dokümanın, klasörün ya da dağıtım listesinin adı |
-| **`I_NO_COMMIT`** | Importing | `FLAG` | Evet | `X` ise metot içinde `COMMIT WORK` çalıştırılmaz |
-| **`I_IMPORTANCE`** | Importing | `BCS_DOCIMP` | Evet | Doküman önceliği (1: Yüksek, 5: Düşük) |
-| **`T_RECEIVER`** | Importing | `ZBRS_MAIL_REC_TAB` | Evet | Alıcı tablosu (TO, CC, BCC yönlendirmeleri) |
-| **`T_TEXT`** | Importing | `SOLI_TAB` | Evet | Mail gövdesi metin tablosu (OBJCONT ve OBJHEAD) |
-| **`T_ATTACH`** | Importing | `ZBRS_ATTACH_TAB` | Evet | Mail ile dosya gönderimi (Ekler) tablo tipi |
-| **`E_MESSAGE`** | Exporting | `TEXT100` | - | İşlem sonucu dönen açıklayıcı mesaj metni |
-| **`E_SUCCESS`** | Exporting | `FLAG` | - | İşlem başarı durumu (X: Başarılı, Boş: Hatalı) |
+<table>
+  <thead>
+    <tr style="background-color: #1F4E79; color: white;">
+      <th>Parametre Adı</th>
+      <th>Yön (Type)</th>
+      <th>Veri Tipi (Type Spec.)</th>
+      <th>Durum</th>
+      <th>Fonksiyonel Açıklama</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><b>I_SENDER</b></td>
+      <td><kbd>Importing</kbd></td>
+      <td><code>AD_SMTPADR</code></td>
+      <td><code>Opsiyonel</code></td>
+      <td>Gönderen e-posta adresi.</td>
+    </tr>
+    <tr>
+      <td><b>I_SENDER_NAME</b></td>
+      <td><kbd>Importing</kbd></td>
+      <td><code>AD_SMTPADR</code></td>
+      <td><code>Opsiyonel</code></td>
+      <td>Gönderen mail adresi tanımı (Görünen Ad).</td>
+    </tr>
+    <tr>
+      <td><b>I_SUBJECT</b></td>
+      <td><kbd>Importing</kbd></td>
+      <td><code>SO_OBJ_DES</code></td>
+      <td><code>Opsiyonel</code></td>
+      <td>Mail konusu (Kısa - Max 50 Karakter).</td>
+    </tr>
+    <tr>
+      <td><b>I_SUBJECT_LONG</b></td>
+      <td><kbd>Importing</kbd></td>
+      <td><code>STRING</code></td>
+      <td><code>Opsiyonel</code></td>
+      <td>Mail konusu (Uzun - Karakter sınırı yoktur).</td>
+    </tr>
+    <tr>
+      <td><b>I_TYPE</b></td>
+      <td><kbd>Importing</kbd></td>
+      <td><code>SO_OBJ_TP</code></td>
+      <td><code>Default 'RAW'</code></td>
+      <td>Döküman tipi kodu (RAW, HTM vb.).</td>
+    </tr>
+    <tr>
+      <td><b>I_MAIL_GROUP</b></td>
+      <td><kbd>Importing</kbd></td>
+      <td><code>SOOBJINFI1-OBJ_NAME</code></td>
+      <td><code>Opsiyonel</code></td>
+      <td>Dağıtım listesi veya klasör adı.</td>
+    </tr>
+    <tr>
+      <td><b>I_NO_COMMIT</b></td>
+      <td><kbd>Importing</kbd></td>
+      <td><code>FLAG</code></td>
+      <td><code>Opsiyonel</code></td>
+      <td><code>X</code> ise metot içinde <code>COMMIT WORK</code> çalıştırılmaz.</td>
+    </tr>
+    <tr>
+      <td><b>I_IMPORTANCE</b></td>
+      <td><kbd>Importing</kbd></td>
+      <td><code>BCS_DOCIMP</code></td>
+      <td><code>Opsiyonel</code></td>
+      <td>Doküman önceliği (1: Yüksek, 5: Düşük).</td>
+    </tr>
+    <tr style="background-color: #f9f9f9;">
+      <td><b>T_RECEIVER</b></td>
+      <td><kbd>Importing</kbd></td>
+      <td><code>ZBRS_MAIL_REC_TAB</code></td>
+      <td><code>Opsiyonel</code></td>
+      <td>Alıcı tablosu (TO, CC, BCC dinamik yönetimi).</td>
+    </tr>
+    <tr style="background-color: #f9f9f9;">
+      <td><b>T_TEXT</b></td>
+      <td><kbd>Importing</kbd></td>
+      <td><code>SOLI_TAB</code></td>
+      <td><code>Opsiyonel</code></td>
+      <td>Mail gövdesi metin tablosu (OBJCONT / OBJHEAD).</td>
+    </tr>
+    <tr style="background-color: #f9f9f9;">
+      <td><b>T_ATTACH</b></td>
+      <td><kbd>Importing</kbd></td>
+      <td><code>ZBRS_ATTACH_TAB</code></td>
+      <td><code>Opsiyonel</code></td>
+      <td>Mail ile gönderilecek eklerin (Attachment) tablosu.</td>
+    </tr>
+    <tr>
+      <td><b>E_MESSAGE</b></td>
+      <td><kbd>Exporting</kbd></td>
+      <td><code>TEXT100</code></td>
+      <td><code>-</code></td>
+      <td>İşlem sonucu dönen açıklayıcı mesaj metni.</td>
+    </tr>
+    <tr>
+      <td><b>E_SUCCESS</b></td>
+      <td><kbd>Exporting</kbd></td>
+      <td><code>FLAG</code></td>
+      <td><code>-</code></td>
+      <td>İşlem başarı durumu (<code>X</code>: Başarılı, <code>Space</code>: Hatalı).</td>
+    </tr>
+  </tbody>
+</table>
 
 ---
 
 ## 🗂️ Bağımlı Veri Sözlüğü (DDIC) Yapıları
 
-Sınıfın esnek ve dinamik yapısını besleyen özel `Table Type` ve `Structure` bileşenlerinin detayları aşağıda kırılımlı olarak belirtilmiştir.
+### 1️⃣ Alıcı Yönetimi Tablosu (`T_RECEIVER`)
+* **Table Type:** `ZBRS_MAIL_REC_TAB` 
+* **Structure (Line Type):** `ZBRS_MAIL_RECEIVER`
 
-### 1. Alıcı Yönetimi Yapısı (`T_RECEIVER`)
-* **Table Type:** `ZBRS_MAIL_REC_TAB` *(Mail alıcıları tablo tipi)*
-* **Line Type (Structure):** `ZBRS_MAIL_RECEIVER` *(Mail receiver)*
-
-| Bileşen (Component) | Bileşen Tipi (Type) | Veri Tipi | Uzunluk | Kısa Açıklama |
-| :--- | :--- | :---: | :---: | :--- |
-| **`RECEIVER`** | `AD_SMTPADR` | CHAR | 241 | Alıcı E-posta adresi |
-| **`CC`** | `OS_BOOLEAN` | CHAR | 1 | Bilgi (Carbon Copy) - Boolean Flag (`X`/` `) |
-| **`BCC`** | `OS_BOOLEAN` | CHAR | 1 | Gizli Bilgi (Blind Carbon Copy) - Boolean Flag (`X`/` `) |
-
-### 2. Ek (Attachment) Yönetimi Yapısı (`T_ATTACH`)
-* **Table Type:** `ZBRS_ATTACH_TAB` *(Mail ile dosya gönderimi tablo tipi)*
-* **Line Type (Structure):** `ZBRS_ATTACH` *(Mail dosya gönderimi yapısı)*
-
-| Bileşen (Component) | Bileşen Tipi (Type) | Veri Tipi | Uzunluk | Kısa Açıklama |
-| :--- | :--- | :---: | :---: | :--- |
-| **`ATT_TYPE`** | `SO_OBJ_TP` | CHAR | 3 | Döküman tipi kodu (Örn: PDF, XLS, RAW) |
-| **`ATT_TITLE`** | `SO_OBJ_DES` | CHAR | 50 | Ek dosyanın adı/kısa içerik tanımı |
-| **`ATTACH`** | `SOLI_TAB` | Table Type | 0 | Metin tabanlı dosya içeriği tablosu |
-| **`ATTACHX`** | `SOLIX_TAB` | Table Type | 0 | Binary (ikili) dosya içeriği tablosu (SOLIX) |
-
----
-
-## 💡 Kritik Geliştirici ve Mimari Notlar
-
-> [!IMPORTANT]
-> **Metin (Text) vs Binary Seçimi**
-> Eğer Smartforms/Adobe Forms çıktısı (PDF) veya ham bir Excel dosyası (`.xlsx`) ekleyecekseniz, `T_ATTACH` yapısındaki **`ATTACHX`** (SOLIX_TAB) alanını beslemeniz gerekir. Düz metin, log dosyaları veya saf HTML şablonları gönderecekseniz **`ATTACH`** alanını kullanmalısınız.
-
-> [!TIP]
-> **Uzun Konu Başlıkları (Subject)**
-> SAP standart veri yapısı gereği `I_SUBJECT` parametresi 50 karakter ile sınırlıdır. Gönderilecek e-postanın konusunun sistem tarafından kesilmesini önlemek adına, uzun başlık senaryolarında doğrudan **`I_SUBJECT_LONG`** (`STRING`) parametresi tercih edilmelidir.
-
-> [!WARNING]
-> **Performans ve Kuyruk Yönetimi (Commit Stratejisi)**
-> Toplu e-posta gönderim döngülerinde (Örn: Batch raporlar) metot içerisinde sürekli `COMMIT WORK` çalışması veritabanı kilitlerine (DB Locks) ve performans kaybına yol açar. Bu senaryolarda `I_NO_COMMIT = 'X'` flag'i set edilmeli ve döngünün en sonunda tek seferlik harici bir `COMMIT WORK` tetiklenmelidir.
-
-```
+```sql
+/* Structure Yapısı Görünümü */
+TYPES: BEGIN OF zbrs_mail_receiver,
+         receiver TYPE ad_smtpadr,   " Alıcı E-posta adresi (CHAR 241)
+         cc       TYPE os_boolean,   " Bilgi (Carbon Copy) -> X/Boş
+         bcc      TYPE os_boolean,   " Gizli Bilgi (Blind Carbon Copy) -> X/Boş
+       END OF zbrs_mail_receiver.
