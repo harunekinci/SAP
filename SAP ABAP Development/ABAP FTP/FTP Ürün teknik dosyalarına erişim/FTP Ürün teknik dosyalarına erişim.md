@@ -46,7 +46,7 @@
 Örnek FTP yolu
 
 ```text
-\\172.16.2.230\Kolacad\Aydinlatma\Kor_Alav_S0\2D\ALAV_S0_2D.dwg
+\\111.11.1.111\Kolacad\Aydinlatma\Kor_Alav_S0\2D\ALAV_S0_2D.dwg
 ```
 
 UNC (Network) yolu
@@ -72,7 +72,7 @@ Klasör
 ## 💻 Yol Ayrıştırma
 
 ```abap
-DATA(path) = '\\172.16.2.230\Kolacad\Aydinlatma\Kor_Alav_S0\2D\ALAV_S0_2D.dwg'.
+DATA(path) = '\\111.11.1.111\Kolacad\Aydinlatma\Kor_Alav_S0\2D\ALAV_S0_2D.dwg'.
 
 IF path(2) EQ '\\'.
 
@@ -111,7 +111,7 @@ lv_position =
 
 | Değişken | Değer |
 |----------|-------|
-| **PATH (İlk Değer)** | `\\172.16.2.230\Kolacad\Aydinlatma\Kor_Alav_S0\2D\ALAV_S0_2D.dwg` |
+| **PATH (İlk Değer)** | `\\111.11.1.111\Kolacad\Aydinlatma\Kor_Alav_S0\2D\ALAV_S0_2D.dwg` |
 | **SHIFT Sonrası** | `\Kolacad\Aydinlatma\Kor_Alav_S0\2D\ALAV_S0_2D.dwg` |
 | **LV_FILENAME** | `ALAV_S0_2D.dwg` |
 | **PATH (Son Değer)** | `\Kolacad\Aydinlatma\Kor_Alav_S0\2D` |
